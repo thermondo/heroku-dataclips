@@ -3,10 +3,11 @@ from __future__ import (
     unicode_literals, absolute_import
 )
 
-import os
 import json
+
 import requests
 import slumber
+from cached_property import cached_property
 from lxml import html
 
 
@@ -41,7 +42,7 @@ class Client(object):
         
         return session.cookies.get('dataclips-sso-session')
 
-    @property
+    @cached_property
     def api(self):
         if self._sso_session is None:
             self._sso_session = self.authenticate()
