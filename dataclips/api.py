@@ -7,8 +7,12 @@ import json
 
 import requests
 import slumber
+from slumber.exceptions import HttpClientError
 from cached_property import cached_property
 from lxml import html
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Client(object):
@@ -18,11 +22,14 @@ class Client(object):
         self._headers = {'Accept': 'application/json'}
         self._base_url = 'https://dataclips.heroku.com/api/v1/'
         self._api = None
-        self._sso_session = None
+        self._authentication_session = None
 
     def authenticate(self):
-        session = requests.Session()
-        res = session.get('https://id.heroku.com/login')
+        if self._authentication_session is not None:
+            return self._authentication_session
+
+        self._authentication_session = requests.Session()
+        res = self._authentication_session.get('https://id.heroku.com/login')
         assert res.status_code == 200
         tree = html.fromstring(res.content)
 
@@ -33,26 +40,28 @@ class Client(object):
             'commit': 'Log In'
         }
 
-        res = session.post('https://id.heroku.com/login', data=data)
+        res = self._authentication_session.post('https://id.heroku.com/login', data=data)
         assert res.status_code == 200
 
         # calling dataclips.heroku.com is to get the dataclips-sso-session
-        res = session.get('https://dataclips.heroku.com')
+        res = self._authentication_session.get('https://dataclips.heroku.com')
         assert res.status_code == 200
         
-        return session.cookies.get('dataclips-sso-session')
+        return self._authentication_session
 
     @cached_property
     def api(self):
-        if self._sso_session is None:
-            self._sso_session = self.authenticate()
+        if self._authentication_session is None:
+            self._authentication_session = self.authenticate()
 
         if self._api is not None:
             return self._api
 
         self._session = requests.Session()
         self._session.cookies = requests.utils.cookiejar_from_dict({
-            'dataclips-sso-session': self._sso_session
+            'dataclips-sso-session': self._authentication_session.cookies.get(
+                'dataclips-sso-session'
+            )
         })
         self._session.headers.update(self._headers)
         self._api = slumber.API(
@@ -81,8 +90,32 @@ class Client(object):
         resources = self.api.heroku_resources.get().decode()
         return json.loads(resources)
 
+    def get_csrf_token(self, slug):
+        # let's make sure we are authenticated
+        self.authenticate()
+
+        res = self._authentication_session.get(
+            'https://dataclips.heroku.com/{}/settings'.format(slug)
+        )
+        tree = html.fromstring(res.content)
+        script_elements = tree.xpath('//script')
+        for script in script_elements:
+            if 'DataclipsConfig' in script.text:
+                json_string = script.text.split('DataclipsConfig =')[1][:-2]
+                return json.loads(json_string)['csrf']
+
     def move_to_resource(self, slug, resource_id):
         post_data = {
             "heroku_resource_id": resource_id
         }
-        return self.api.clips(slug).move.post(post_data)
+
+        self._session.headers.update({
+            'X-CSRF-Token': self.get_csrf_token(slug)
+        })
+
+        try:
+            return self.api.clips(slug).move.post(post_data)
+        except HttpClientError as e:
+            logger.warning(
+                'Failed to move dataclip with slug: {}'.format(slug)
+            )
