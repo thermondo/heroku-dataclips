@@ -8,7 +8,7 @@ cached-property==1.3.0
 click==6.2                # via pip-tools
 first==2.0.1              # via pip-tools
 lxml==3.7.1
-pip-tools==1.6
+pip-tools==1.8.0
 requests==2.9.1
 six==1.10.0               # via pip-tools
 slumber==0.7.1
