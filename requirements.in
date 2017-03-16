@@ -2,3 +2,4 @@ requests
 slumber
 lxml
 cached-property
+click
