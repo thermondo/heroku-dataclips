@@ -10,5 +10,5 @@ first==2.0.1              # via pip-tools
 lxml==4.0.0
 pip-tools==1.9.0
 requests==2.18.4
-six==1.10.0               # via pip-tools
+six==1.11.0               # via pip-tools
 slumber==0.7.1
