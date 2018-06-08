@@ -22,7 +22,7 @@ def move_all(email, password, source_resource, destination_resource):
     source_dataclips_slugs = [
         dataclip['slug']
         for dataclip in heroku.get_all_dataclips()
-        if dataclip['heroku_resource_id'] == resources[source_resource]
+        if dataclip['heroku_id'] == resources[source_resource]
     ]
 
     for source_dataclip_slug in source_dataclips_slugs:
