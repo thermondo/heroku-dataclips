@@ -106,7 +106,7 @@ class Client(object):
 
     def move_to_resource(self, slug, resource_id):
         post_data = {
-            "heroku_resource_id": resource_id
+            "heroku_id": resource_id
         }
 
         self._session.headers.update({
