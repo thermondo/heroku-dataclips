@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements_dev.in
 #
-cached-property==1.4.3
+cached-property==1.5.1
 click==6.7 # via pip-tools
 first==2.0.1              # via pip-tools
 lxml==4.2.4
