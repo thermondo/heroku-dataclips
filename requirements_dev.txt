@@ -9,6 +9,6 @@ click==7.0 # via pip-tools
 first==2.0.1              # via pip-tools
 lxml==4.2.5
 pip-tools==3.1.0
-requests==2.19.1
+requests==2.20.0
 six==1.11.0               # via pip-tools
 slumber==0.7.1
