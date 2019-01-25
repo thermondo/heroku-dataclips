@@ -5,10 +5,13 @@
 #    pip-compile requirements_dev.in
 #
 cached-property==1.5.1
-click==7.0 # via pip-tools
-first==2.0.1              # via pip-tools
+certifi==2018.11.29       # via requests
+chardet==3.0.4            # via requests
+click==7.0                # via pip-tools
+idna==2.8                 # via requests
 lxml==4.2.5
-pip-tools==3.2.0
+pip-tools==3.3.1
 requests==2.21.0
 six==1.12.0               # via pip-tools
 slumber==0.7.1
+urllib3==1.24.1           # via requests
