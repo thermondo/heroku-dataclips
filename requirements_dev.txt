@@ -10,7 +10,7 @@ chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
 idna==2.8                 # via requests
 lxml==4.3.0
-pip-tools==3.3.2
+pip-tools==3.8.0
 requests==2.21.0
 six==1.12.0               # via pip-tools
 slumber==0.7.1
