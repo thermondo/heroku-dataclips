@@ -12,6 +12,6 @@ idna==2.8                 # via requests
 lxml==4.4.2
 pip-tools==4.3.0
 requests==2.22.0
-six==1.13.0               # via pip-tools
+six==1.14.0               # via pip-tools
 slumber==0.7.1
 urllib3==1.25.7           # via requests
